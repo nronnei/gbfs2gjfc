@@ -1,0 +1,17 @@
+{
+  "name": "gbfs2gjfc",
+  "version": "0.0.1",
+  "description": "Converts GBFS Feed Data into GeoJSON Feature Collections.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "keywords": [
+    "gbfs",
+    "geojson",
+    "bikeshare",
+    "niceride"
+  ],
+  "author": "Nick Ronnei",
+  "license": "ISC"
+}
