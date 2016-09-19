@@ -1,6 +1,6 @@
 {
   "name": "gbfs2gjfc",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Converts GBFS Feed Data into GeoJSON Feature Collections. This is adapted from Motivateco's gbfs2geosjon-js.",
   "main": "index.js",
   "scripts": {
@@ -15,6 +15,7 @@
   "author": "Nick Ronnei",
   "license": "ISC",
   "dependencies": {
+    "moment": "^2.15.0",
     "request": "^2.74.0"
   }
 }
