@@ -14,6 +14,7 @@ const meta = {
   system_alerts: undefined
 }
 
+
 const FeatureCollection = (system_info) => {
   startTime = new Date();
   if (system_info === undefined) {
@@ -32,12 +33,16 @@ const FeatureCollection = (system_info) => {
     return {
       "type": "FeatureCollection",
       "system_information": system_info,
+      "system_hours": undefined,
+      "system_calendar": undefined,
+      "system_pricing_plans": undefined,
       "features": []
     };
 
   }
 
 };
+
 
 const Feature = (station_info) => {
 
@@ -63,6 +68,7 @@ const Feature = (station_info) => {
   };
 
 };
+
 
 const setGBFS = (url, callback) => {
   request(url, (err, res, body) => {
@@ -92,13 +98,16 @@ const setGBFS = (url, callback) => {
   });
 };
 
+
 const getLanuageOptions = () => {
   return meta.availableLanguages
 }
 
+
 const getFeedLanguage = () => {
   return meta.feedLanaguage;
 }
+
 
 const setFeedLanguage = (language_string) => {
   if (typeof(language_string) !== 'string') {
@@ -109,6 +118,7 @@ const setFeedLanguage = (language_string) => {
   }
   meta.feedLanaguage = language_string;
 }
+
 
 const getFeed = (feedUrl, callback) => {
   request(feedUrl, (err, res, body) => {
@@ -128,6 +138,7 @@ const getFeed = (feedUrl, callback) => {
     }
   });
 };
+
 
 const updateStationStatus = (featureCollection, callback) => {
   // Get Station Status
@@ -158,27 +169,50 @@ const updateStationStatus = (featureCollection, callback) => {
 
 };
 
+
+// @TODO Fix this callback hell, there has to be a better way to do this.
 const buildFeatureCollection = (callback) => {
   let featureCollection = undefined;
 
   // Get System Information
   getFeed(meta.system_information, (systemData) => {
+
     // Build featureCollection using System Information
     let featureCollection = FeatureCollection(systemData.data);
 
-    // Get Station Information
-    getFeed(meta.station_information, (stationInfo) => {
-      let stations = stationInfo.data.stations;
-      // Populate featureCollection.features
-      for (station of stations) {
-        let feature = Feature(station);
-        featureCollection.features.push(feature);
-      }
-      // Get Station Status, update featureCollection
-      updateStationStatus(featureCollection, () => {
-        callback(featureCollection);
-      });
+    // Get System Hours
+    getFeed(meta.system_hours, (hoursData) => {
+      featureCollection.system_hours = hoursData.data;
 
+      // Get System Calendar
+      getFeed(meta.system_calendar, (calendarData) => {
+        featureCollection.system_calendar = calendarData.data;
+
+        // Get System Pricing
+        getFeed(meta.system_pricing_plans, (pricingData) => {
+          featureCollection.system_pricing_plans = pricingData.data;
+
+          // Get System Region
+          getFeed(meta.system_region, (regionData) => {
+
+            // Get Station Information
+            getFeed(meta.station_information, (stationInfo) => {
+              let stations = stationInfo.data.stations;
+
+              // Populate featureCollection.features
+              for (station of stations) {
+                let feature = Feature(station);
+                featureCollection.features.push(feature);
+              }
+
+              // Get Station Status, update featureCollection
+              updateStationStatus(featureCollection, () => {
+                callback(featureCollection);
+              });
+            });
+          });
+        });
+      });
     });
   });
 };
