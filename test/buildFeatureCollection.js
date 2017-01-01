@@ -1,1 +1,1 @@
-console.log("buildFeatureCollection Test coming sooon...");
+console.log("buildStationStatus Test coming soon...");

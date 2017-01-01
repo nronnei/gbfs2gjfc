@@ -24,7 +24,7 @@ console.log("\nCurrent time: " + startTime.format("dddd, MMM Do - h:mm a"));
 // Pronto, Seattle - https://gbfs.prontocycleshare.com/gbfs/gbfs.json
 // Bublr, Milwuakee - https://gbfs.bcycle.com/bcycle_bublr/gbfs.json
 
-g2g.setGBFS("https://gbfs.bcycle.com/bcycle_bublr/gbfs.json", () => {
+g2g.setGBFS("https://gbfs.prontocycleshare.com/gbfs/gbfs.json", () => {
 
   // Now lets build an actual FeatureCollection!
   // This method would be used to instantiate your GeoJSON Layer
@@ -74,7 +74,7 @@ g2g.setGBFS("https://gbfs.bcycle.com/bcycle_bublr/gbfs.json", () => {
 
 
 // Now lets simulate an update
-// We'll wait 60 seconds, then grab an update and print all the same stuff from before
+// We'll wait 61 seconds, then grab an update and print all the same stuff from before
 const delay = 61000;
 setTimeout(() => {
   g2g.updateStationStatus(myFC, () => {

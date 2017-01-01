@@ -3,16 +3,18 @@ const request = require("request");
 // Set default meta to NiceRide MN (object of my own work)
 const meta = {
   feedLanaguage: "en",
-  availableLanguages: ["en", "fr"],
-  system_information: "https://api-core.niceridemn.org/gbfs/en/system_information.json",
-  station_information: "https://api-core.niceridemn.org/gbfs/en/station_information.json",
-  station_status: "https://api-core.niceridemn.org/gbfs/en/station_status.json",
+  availableLanguages: undefined,
+  system_information: undefined,
+  station_information: undefined,
+  station_status: undefined,
   free_bike_status: undefined,
   system_hours: undefined,
-  system_calendar: "https://api-core.niceridemn.org/gbfs/en/system_calendar.json",
-  system_pricing_plans: "https://api-core.niceridemn.org/gbfs/en/system_pricing_plans.json",
+  system_calendar: undefined,
+  system_pricing_plans: undefined,
+  system_regions: undefined,
   system_alerts: undefined
-}
+};
+
 
 const FeatureCollection = (system_info) => {
   startTime = new Date();
@@ -32,12 +34,17 @@ const FeatureCollection = (system_info) => {
     return {
       "type": "FeatureCollection",
       "system_information": system_info,
+      "system_hours": undefined,
+      "system_calendar": undefined,
+      "system_pricing_plans": undefined,
+      "system_regions": undefined,
       "features": []
     };
 
   }
 
 };
+
 
 const Feature = (station_info) => {
 
@@ -63,6 +70,7 @@ const Feature = (station_info) => {
   };
 
 };
+
 
 const setGBFS = (url, callback) => {
   request(url, (err, res, body) => {
@@ -92,13 +100,16 @@ const setGBFS = (url, callback) => {
   });
 };
 
+
 const getLanuageOptions = () => {
   return meta.availableLanguages
 }
 
+
 const getFeedLanguage = () => {
   return meta.feedLanaguage;
 }
+
 
 const setFeedLanguage = (language_string) => {
   if (typeof(language_string) !== 'string') {
@@ -109,6 +120,7 @@ const setFeedLanguage = (language_string) => {
   }
   meta.feedLanaguage = language_string;
 }
+
 
 const getFeed = (feedUrl, callback) => {
   request(feedUrl, (err, res, body) => {
@@ -128,6 +140,83 @@ const getFeed = (feedUrl, callback) => {
     }
   });
 };
+
+
+const getSystemCalendarFeed = (callback) => {
+  if (meta.system_calendar != undefined) {
+    getFeed(meta.system_calendar, (calendarData) => {
+      callback(calendarData.data.calendars);
+    });
+  } else {
+    let calendarData = undefined;
+    callback(calendarData);
+  }
+};
+
+
+const getSystemHoursFeed = (callback) => {
+  if (meta.system_hours != undefined) {
+    getFeed(meta.system_hours, (hoursData) => {
+      callback(hoursData.data);
+    });
+  } else {
+    let hoursData = undefined;
+    callback(hoursData);
+  }
+};
+
+
+const getSystemPricingFeed = (callback) => {
+  if (meta.system_pricing_plans != undefined) {
+    getFeed(meta.system_pricing_plans, (pricingData) => {
+      callback(pricingData.data);
+    });
+  } else {
+    let pricingData = undefined;
+    callback(pricingData);
+  }
+};
+
+
+const getSystemRegionsFeed = (callback) => {
+  if (meta.system_regions != undefined) {
+    getFeed(meta.system_regions, (regionsData) => {
+      callback(regionsData.data);
+    });
+  } else {
+    let regionsData = undefined;
+    callback(regionsData);
+  }
+};
+
+
+const setAuxiliarySystemInformation = (featureCollection, callback) => {
+
+  // Get system calendar feed, or return "undefined" if meta has no feed URL
+  getSystemCalendarFeed((calendarData) => {
+    featureCollection.system_calendar = calendarData;
+
+    // Get system pricing feed, or return "undefined" if meta has no feed URL
+    getSystemPricingFeed((pricingData) => {
+      featureCollection.system_pricing_plans = pricingData;
+
+      // Get system regions feed, or return "undefined" if meta has no feed URL
+      getSystemRegionsFeed((regionsData) => {
+        featureCollection.system_regions = regionsData;
+
+        // Get system hours feed, or return "undefined" if meta has no feed URL
+        getSystemHoursFeed((hoursData) => {
+          featureCollection.system_hours = hoursData;
+
+          // Finally, call the callback
+          callback();
+
+        });
+      });
+    });
+  });
+};
+
 
 const updateStationStatus = (featureCollection, callback) => {
   // Get Station Status
@@ -158,37 +247,47 @@ const updateStationStatus = (featureCollection, callback) => {
 
 };
 
+
 const buildFeatureCollection = (callback) => {
   let featureCollection = undefined;
 
   // Get System Information
   getFeed(meta.system_information, (systemData) => {
+
     // Build featureCollection using System Information
     let featureCollection = FeatureCollection(systemData.data);
 
     // Get Station Information
     getFeed(meta.station_information, (stationInfo) => {
+
       let stations = stationInfo.data.stations;
+
       // Populate featureCollection.features
       for (station of stations) {
         let feature = Feature(station);
         featureCollection.features.push(feature);
       }
+
       // Get Station Status, update featureCollection
       updateStationStatus(featureCollection, () => {
-        callback(featureCollection);
-      });
 
+        // Set addition system information, if available
+        setAuxiliarySystemInformation(featureCollection, () => {
+
+          // Finally, call the callback
+          callback(featureCollection);
+
+        });
+      });
     });
   });
 };
 
 
 
+
 // Export all the functions
 module.exports = {
-  FeatureCollection: FeatureCollection,
-  Feature: Feature,
   setGBFS: setGBFS,
   getLanuageOptions: getLanuageOptions,
   getFeedLanguage: getFeedLanguage,
