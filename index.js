@@ -38,10 +38,7 @@ const FeatureCollection = (system_info) => {
       "system_hours": undefined,
       "system_calendar": undefined,
       "system_pricing_plans": undefined,
-<<<<<<< HEAD
       "system_regions": undefined,
-=======
->>>>>>> 4cc324e03f72372a726c705158764e858a6bada1
       "features": []
     };
 
@@ -146,7 +143,6 @@ const getFeed = (feedUrl, callback) => {
 };
 
 
-<<<<<<< HEAD
 const getSystemCalendarFeed = (callback) => {
   if (meta.system_calendar != undefined) {
     getFeed(meta.system_calendar, (calendarData) => {
@@ -223,8 +219,6 @@ const setAuxiliarySystemInformation = (featureCollection, callback) => {
 };
 
 
-=======
->>>>>>> 4cc324e03f72372a726c705158764e858a6bada1
 const updateStationStatus = (featureCollection, callback) => {
   // Get Station Status
   getFeed(meta.station_status, (statusUpdate) => {
@@ -248,7 +242,7 @@ const updateStationStatus = (featureCollection, callback) => {
       // A Thought: this would be more efficient if it was indexed.
 
     }
-    
+
     callback();
   });
 
