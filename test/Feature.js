@@ -48,15 +48,14 @@ describe("The Feature factory function", () => {
     expect(feature).has.deep.property('geometry.coordinates[0]', -93.256551);
     expect(feature).has.deep.property('geometry.coordinates[1]', 44.984892);
   });
-  it("with properties.station_info properly formatted and populated", () => {
-    expect(feature).to.have.deep.property('properties.station_info');
+  it("with properties properly formatted and populated", () => {
     for (let i in stationInfoKeys) {
-      let prop = feature.properties.station_info[stationInfoKeys[i]]
+      let prop = feature.properties[stationInfoKeys[i]]
       expect(prop).to.eql(stationInfoValues[i]);
     }
   });
   it("with properties.station_status undefined", () => {
-    expect(feature).to.have.deep.property('properties.station_status')
+    expect(feature).to.have.deep.property('properties.short_name')
       .to.be.undefined;
   });
 });

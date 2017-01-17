@@ -23,6 +23,10 @@ const FeatureCollection = (system_info) => {
     return {
       "type": "FeatureCollection",
       "system_information": undefined,
+      "system_hours": undefined,
+      "system_calendar": undefined,
+      "system_pricing_plans": undefined,
+      "system_regions": undefined,
       "features": []
     };
   } else {
@@ -38,10 +42,7 @@ const FeatureCollection = (system_info) => {
       "system_hours": undefined,
       "system_calendar": undefined,
       "system_pricing_plans": undefined,
-<<<<<<< HEAD
       "system_regions": undefined,
-=======
->>>>>>> 4cc324e03f72372a726c705158764e858a6bada1
       "features": []
     };
 
@@ -60,15 +61,33 @@ const Feature = (station_info) => {
   }
   return {
     "type": "Feature",
-    "station_id": station_info.station_id,
-    "last_updated": undefined,
     "geometry": {
       "type": "Point",
       "coordinates": [station_info.lon, station_info.lat]
     },
     "properties": {
-      "station_information": station_info,
-      "station_status": undefined,
+      "last_updated": undefined,
+      "station_id": station_info.station_id,
+      "name": station_info.name,
+      "short_name": station_info.short_name,
+      "address": station_info.address,
+      "cross_street": station_info.cross_street,
+      "region_id": station_info.region_id,
+      "post_code": station_info.post_code,
+      "rental_methods": station_info.rental_methods,
+      "capacity": station_info.capacity,
+
+      "num_bikes_available": undefined,
+      "num_bikes_disabled": undefined,
+      "num_docks_available": undefined,
+      "num_docks_disabled": undefined,
+      "pct_available": undefined,
+      "total_docks": undefined,
+      "is_installed": undefined,
+      "is_renting": undefined,
+      "is_returning": undefined,
+      "last_reported": undefined,
+
       "station_alerts": undefined
     }
   };
@@ -146,7 +165,6 @@ const getFeed = (feedUrl, callback) => {
 };
 
 
-<<<<<<< HEAD
 const getSystemCalendarFeed = (callback) => {
   if (meta.system_calendar != undefined) {
     getFeed(meta.system_calendar, (calendarData) => {
@@ -223,8 +241,6 @@ const setAuxiliarySystemInformation = (featureCollection, callback) => {
 };
 
 
-=======
->>>>>>> 4cc324e03f72372a726c705158764e858a6bada1
 const updateStationStatus = (featureCollection, callback) => {
   // Get Station Status
   getFeed(meta.station_status, (statusUpdate) => {
@@ -237,18 +253,28 @@ const updateStationStatus = (featureCollection, callback) => {
 
       // Get the station_id
       let id = update.station_id;
+      let totalDocks = update.capacity ? update.capacity : (update.num_bikes_available + update.num_docks_available)
 
       // Match the station_id of the update to one in featureCollection
       for (station of featureCollection.features) {
-        if (id == station.station_id) {
-          station.last_updated = updateTime;
-          station.properties.station_status = update;
+        if (id == station.properties.station_id) {
+          station.properties.num_bikes_available = update.num_bikes_available;
+          station.properties.num_bikes_disabled = update.num_bikes_disabled;
+          station.properties.num_docks_available = update.num_docks_available;
+          station.properties.num_docks_disabled = update.num_docks_disabled;
+          station.properties.pct_available = (update.num_bikes_available / totalDocks);
+          station.properties.total_docks = totalDocks;
+          station.properties.is_installed = update.is_installed;
+          station.properties.is_renting = update.is_renting;
+          station.properties.is_returning = update.is_returning;
+          station.properties.last_reported = update.last_reported;
+          station.properties.last_updated = updateTime;
         }
       }
       // A Thought: this would be more efficient if it was indexed.
 
     }
-    
+
     callback();
   });
 
@@ -296,6 +322,8 @@ const buildFeatureCollection = (callback) => {
 // Export all the functions
 module.exports = {
   setGBFS: setGBFS,
+  Feature: Feature,
+  FeatureCollection: FeatureCollection,
   getLanuageOptions: getLanuageOptions,
   getFeedLanguage: getFeedLanguage,
   setFeedLanguage: setFeedLanguage,

@@ -67,7 +67,7 @@ describe("The FeatureCollection factory function", () => {
   it("with no features and system_info undefined", () => {
     let fc = lib.FeatureCollection();
     expect(fc).to.have.property('features')
-      .to.have.lengthOf(0)
+      .to.have.lengthOf(0);
     expect(fc).to.have.property('system_info')
       .to.be.undefined;
   });
@@ -85,7 +85,7 @@ describe("The FeatureCollection factory function", () => {
   it("with no features and properly formmatted and defined system_info", () => {
     let fc = lib.FeatureCollection(system_info);
     expect(fc).to.have.property('features')
-      .to.have.lengthOf(0)
+      .to.have.lengthOf(0);
     for (let i of dataKeys) {
       let prop = fc.system_info.data[dataKeys[i]];
       expect(prop).to.eql(dataVals[i]);

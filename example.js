@@ -24,7 +24,7 @@ console.log("\nCurrent time: " + startTime.format("dddd, MMM Do - h:mm a"));
 // Pronto, Seattle - https://gbfs.prontocycleshare.com/gbfs/gbfs.json
 // Bublr, Milwuakee - https://gbfs.bcycle.com/bcycle_bublr/gbfs.json
 
-g2g.setGBFS("https://gbfs.prontocycleshare.com/gbfs/gbfs.json", () => {
+g2g.setGBFS("https://gbfs.bcycle.com/bcycle_bublr/gbfs.json", () => {
 
   // Now lets build an actual FeatureCollection!
   // This method would be used to instantiate your GeoJSON Layer
@@ -41,13 +41,13 @@ g2g.setGBFS("https://gbfs.prontocycleshare.com/gbfs/gbfs.json", () => {
       console.log("\n");
 
       // Set time vars for convenience
-      let updateTime = moment.unix(feature.last_updated);
-      let reportTime = moment.unix(parseInt(feature.properties.station_status.last_reported));
+      let updateTime = moment.unix(feature.properties.last_updated);
+      let reportTime = moment.unix(parseInt(feature.properties.last_reported));
 
       // Log last updated
       console.log(
         "Station '"
-        + feature.station_id +
+        + feature.properties.station_id +
         "' last updated at "
         + updateTime.format("dddd, MMM Do - h:mm a")
       );
@@ -55,7 +55,7 @@ g2g.setGBFS("https://gbfs.prontocycleshare.com/gbfs/gbfs.json", () => {
       // Log last reported
       console.log(
         "Station '"
-        + feature.station_id +
+        + feature.properties.station_id +
         "' last reported at "
         + reportTime.format("dddd, MMM Do - h:mm a")
       );
@@ -82,13 +82,13 @@ setTimeout(() => {
       console.log("\n");
 
       // Set time vars for convenience
-      let updateTime = moment.unix(feature.last_updated);
-      let reportTime = moment.unix(parseInt(feature.properties.station_status.last_reported));
+      let updateTime = moment.unix(feature.properties.last_updated);
+      let reportTime = moment.unix(parseInt(feature.properties.last_reported));
 
       // Log last updated
       console.log(
         "Station '"
-        + feature.station_id +
+        + feature.properties.station_id +
         "' last updated at "
         + updateTime.format("dddd, MMM Do - h:mm a")
       );
@@ -96,7 +96,7 @@ setTimeout(() => {
       // Log last reported
       console.log(
         "Station '"
-        + feature.station_id +
+        + feature.properties.station_id +
         "' last reported at "
         + reportTime.format("dddd, MMM Do - h:mm a")
       );
