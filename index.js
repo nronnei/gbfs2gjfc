@@ -27,6 +27,7 @@ const FeatureCollection = (system_info) => {
       "system_calendar": undefined,
       "system_pricing_plans": undefined,
       "system_regions": undefined,
+      "status_ttl": undefined,
       "features": []
     };
   } else {
@@ -43,6 +44,7 @@ const FeatureCollection = (system_info) => {
       "system_calendar": undefined,
       "system_pricing_plans": undefined,
       "system_regions": undefined,
+      "status_ttl": undefined,
       "features": []
     };
 
@@ -83,6 +85,7 @@ const Feature = (station_info) => {
       "num_docks_disabled": undefined,
       "pct_available": undefined,
       "total_docks": undefined,
+      "style_size": undefined,
       "is_installed": undefined,
       "is_renting": undefined,
       "is_returning": undefined,
@@ -245,6 +248,7 @@ const updateStationStatus = (featureCollection, callback) => {
   // Get Station Status
   getFeed(meta.station_status, (statusUpdate) => {
 
+    featureCollection.status_ttl = statusUpdate.ttl
     let updateTime = statusUpdate.last_updated;
     let stationUpdates = statusUpdate.data.stations;
 
@@ -264,6 +268,7 @@ const updateStationStatus = (featureCollection, callback) => {
           station.properties.num_docks_disabled = update.num_docks_disabled;
           station.properties.pct_available = (update.num_bikes_available / totalDocks);
           station.properties.total_docks = totalDocks;
+          station.properties.style_size = Math.log(totalDocks);
           station.properties.is_installed = update.is_installed;
           station.properties.is_renting = update.is_renting;
           station.properties.is_returning = update.is_returning;
