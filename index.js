@@ -98,10 +98,11 @@ const Feature = (station_info) => {
 };
 
 
-const setGBFS = (url, callback) => {
+const setGBFS = (url, callback, failure) => {
   request(url, (err, res, body) => {
     // Handle errors
     if (err) {
+      failure();
       return console.error(err);
 
     // Handle connection problems i.e. 403/404
