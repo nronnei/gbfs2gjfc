@@ -119,7 +119,14 @@ const setGBFS = (url, callback, failure) => {
 
       // Set feed urls in meta
       for (feed of data.data[meta.feedLanaguage].feeds) {
+
+        // Force HTTPS
+        if (feed.url.substring(0, 5) == 'http:') {
+          feed.url = feed.url.replace('http', 'https');
+        }
+
         meta[feed.name] = feed.url;
+
       }
 
       callback();
